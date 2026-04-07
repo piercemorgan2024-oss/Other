@@ -6,6 +6,12 @@ const totalExpenses = document.querySelector("#total-expenses");
 const remainingBalance = document.querySelector("#remaining-balance");
 const spendingRatio = document.querySelector("#spending-ratio");
 const goalText = document.querySelector("#goal-text");
+const recommendedSavings = document.querySelector("#recommended-savings");
+const essentialTotal = document.querySelector("#essential-total");
+const flexibleTotal = document.querySelector("#flexible-total");
+const focusMessage = document.querySelector("#focus-message");
+const budgetHealth = document.querySelector("#budget-health");
+const adjustmentList = document.querySelector("#adjustment-list");
 const apiBaseUrl = "http://127.0.0.1:8000";
 
 async function loadStatus() {
@@ -71,6 +77,23 @@ function buildPayload(formData) {
   };
 }
 
+function renderAdjustments(adjustments) {
+  adjustmentList.innerHTML = "";
+
+  if (!adjustments.length) {
+    const item = document.createElement("li");
+    item.textContent = "Your current spending is already within the starting targets for each category.";
+    adjustmentList.append(item);
+    return;
+  }
+
+  adjustments.slice(0, 4).forEach((adjustment) => {
+    const item = document.createElement("li");
+    item.textContent = `${adjustment.label}: about ${formatCurrency(adjustment.difference)} above the starting target.`;
+    adjustmentList.append(item);
+  });
+}
+
 async function submitBudgetForm(event) {
   event.preventDefault();
   formMessage.classList.remove("error");
@@ -101,6 +124,12 @@ async function submitBudgetForm(event) {
     remainingBalance.textContent = formatCurrency(data.summary.remaining_balance);
     spendingRatio.textContent = `${data.summary.spending_ratio}%`;
     goalText.textContent = data.profile.financial_goal;
+    recommendedSavings.textContent = formatCurrency(data.budget_plan.recommended_budget.savings);
+    essentialTotal.textContent = formatCurrency(data.budget_plan.recommended_budget.essentials_total);
+    flexibleTotal.textContent = formatCurrency(data.budget_plan.recommended_budget.flexible_total);
+    focusMessage.textContent = data.budget_plan.budget_health.focus_message;
+    budgetHealth.textContent = `Status: ${data.budget_plan.budget_health.status}`;
+    renderAdjustments(data.budget_plan.adjustments);
     resultCard.hidden = false;
   } catch (error) {
     formMessage.textContent = error.message;

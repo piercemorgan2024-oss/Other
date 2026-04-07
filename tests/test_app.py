@@ -50,6 +50,73 @@ def test_intake_accepts_valid_financial_profile() -> None:
         "debt_balance": 9500.0,
         "savings_goal": 300.0,
     }
+    assert response.json()["budget_plan"]["recommended_budget"] == {
+        "categories": {
+            "housing": 1260.0,
+            "utilities": 420.0,
+            "food": 504.0,
+            "transportation": 420.0,
+            "healthcare": 336.0,
+            "debt_payments": 420.0,
+            "personal": 210.0,
+            "other": 210.0,
+        },
+        "savings": 300.0,
+        "essentials_total": 2495.0,
+        "flexible_total": 305.0,
+    }
+    assert response.json()["budget_plan"]["budget_health"]["status"] == "stable"
+
+
+def test_intake_handles_irregular_low_income_profile() -> None:
+    payload = {
+        "monthly_income": 1800,
+        "debt_balance": 3200,
+        "savings_goal": 200,
+        "financial_goal": "Stay current on bills",
+        "expenses": {
+            "housing": 760,
+            "utilities": 135,
+            "food": 240,
+            "transportation": 120,
+            "healthcare": 75,
+            "debt_payments": 150,
+            "personal": 80,
+            "other": 60,
+        },
+    }
+
+    response = client.post("/intake", json=payload)
+
+    assert response.status_code == 200
+    assert response.json()["budget_plan"]["recommended_budget"]["savings"] == 180.0
+    assert response.json()["budget_plan"]["budget_health"]["status"] == "tight"
+
+
+def test_intake_handles_high_debt_profile_with_negative_balance() -> None:
+    payload = {
+        "monthly_income": 2600,
+        "debt_balance": 18000,
+        "savings_goal": 150,
+        "financial_goal": "Reduce debt stress",
+        "expenses": {
+            "housing": 1100,
+            "utilities": 210,
+            "food": 390,
+            "transportation": 230,
+            "healthcare": 120,
+            "debt_payments": 420,
+            "personal": 180,
+            "other": 140,
+        },
+    }
+
+    response = client.post("/intake", json=payload)
+
+    assert response.status_code == 200
+    assert response.json()["summary"]["remaining_balance"] == -190.0
+    assert response.json()["budget_plan"]["budget_health"]["status"] == "stretched"
+    assert response.json()["budget_plan"]["adjustments"][0]["category"] == "housing"
 
 
 def test_intake_rejects_negative_values() -> None:
