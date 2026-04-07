@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.app.analysis_engine import build_spending_analysis
 from backend.app.budget_engine import build_budget_plan
 from backend.app.models import FinancialProfile
 
@@ -35,6 +36,7 @@ def submit_intake(profile: FinancialProfile) -> dict[str, object]:
     total_expenses = sum(profile.expenses.model_dump().values())
     remaining_balance = round(profile.monthly_income - total_expenses, 2)
     budget_plan = build_budget_plan(profile)
+    spending_analysis = build_spending_analysis(profile)
 
     if profile.monthly_income == 0:
         spending_ratio = 0.0
@@ -53,4 +55,5 @@ def submit_intake(profile: FinancialProfile) -> dict[str, object]:
             "savings_goal": profile.savings_goal,
         },
         "budget_plan": budget_plan,
+        "spending_analysis": spending_analysis,
     }

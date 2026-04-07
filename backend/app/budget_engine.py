@@ -5,8 +5,7 @@ BUDGET_TARGETS = {
     "housing": 0.30,
     "utilities": 0.10,
     "food": 0.12,
-    "transportation": 0.10,
-    "healthcare": 0.08,
+    "gas": 0.10,
     "debt_payments": 0.10,
     "personal": 0.05,
     "other": 0.05,
@@ -16,8 +15,7 @@ ESSENTIAL_CATEGORIES = {
     "housing",
     "utilities",
     "food",
-    "transportation",
-    "healthcare",
+    "gas",
     "debt_payments",
 }
 

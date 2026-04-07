@@ -1,4 +1,3 @@
-const apiStatus = document.querySelector("#api-status");
 const budgetForm = document.querySelector("#budget-form");
 const formMessage = document.querySelector("#form-message");
 const resultCard = document.querySelector("#result-card");
@@ -12,22 +11,11 @@ const flexibleTotal = document.querySelector("#flexible-total");
 const focusMessage = document.querySelector("#focus-message");
 const budgetHealth = document.querySelector("#budget-health");
 const adjustmentList = document.querySelector("#adjustment-list");
+const pressureLevel = document.querySelector("#pressure-level");
+const analysisOverview = document.querySelector("#analysis-overview");
+const pressurePoints = document.querySelector("#pressure-points");
+const reliefAreas = document.querySelector("#relief-areas");
 const apiBaseUrl = "http://127.0.0.1:8000";
-
-async function loadStatus() {
-  try {
-    const response = await fetch(`${apiBaseUrl}/`);
-
-    if (!response.ok) {
-      throw new Error("Unable to reach backend");
-    }
-
-    const data = await response.json();
-    apiStatus.textContent = data.message;
-  } catch (error) {
-    apiStatus.textContent = "Backend offline. Start the API to continue.";
-  }
-}
 
 function formatCurrency(value) {
   return new Intl.NumberFormat("en-US", {
@@ -68,8 +56,7 @@ function buildPayload(formData) {
       housing: parseRequiredNumber(formData, "housing"),
       utilities: parseRequiredNumber(formData, "utilities"),
       food: parseRequiredNumber(formData, "food"),
-      transportation: parseRequiredNumber(formData, "transportation"),
-      healthcare: parseRequiredNumber(formData, "healthcare"),
+      gas: parseRequiredNumber(formData, "gas"),
       debt_payments: parseRequiredNumber(formData, "debt_payments"),
       personal: parseRequiredNumber(formData, "personal"),
       other: parseRequiredNumber(formData, "other"),
@@ -91,6 +78,23 @@ function renderAdjustments(adjustments) {
     const item = document.createElement("li");
     item.textContent = `${adjustment.label}: about ${formatCurrency(adjustment.difference)} above the starting target.`;
     adjustmentList.append(item);
+  });
+}
+
+function renderSimpleList(listElement, items, emptyMessage) {
+  listElement.innerHTML = "";
+
+  if (!items.length) {
+    const item = document.createElement("li");
+    item.textContent = emptyMessage;
+    listElement.append(item);
+    return;
+  }
+
+  items.forEach((entry) => {
+    const item = document.createElement("li");
+    item.textContent = entry;
+    listElement.append(item);
   });
 }
 
@@ -130,6 +134,22 @@ async function submitBudgetForm(event) {
     focusMessage.textContent = data.budget_plan.budget_health.focus_message;
     budgetHealth.textContent = `Status: ${data.budget_plan.budget_health.status}`;
     renderAdjustments(data.budget_plan.adjustments);
+    pressureLevel.textContent = `Pressure level: ${data.spending_analysis.pressure_level}`;
+    analysisOverview.textContent = data.spending_analysis.overview;
+    renderSimpleList(
+      pressurePoints,
+      data.spending_analysis.pressure_points.map(
+        (point) => `${point.title}. ${point.detail}`,
+      ),
+      "No major pressure points are standing out yet."
+    );
+    renderSimpleList(
+      reliefAreas,
+      data.spending_analysis.relief_areas.map(
+        (area) => `${area.label}: around ${formatCurrency(area.relief_amount)} of potential monthly relief.`,
+      ),
+      "No overspending categories are above the current targets."
+    );
     resultCard.hidden = false;
   } catch (error) {
     formMessage.textContent = error.message;
@@ -137,5 +157,4 @@ async function submitBudgetForm(event) {
   }
 }
 
-loadStatus();
 budgetForm.addEventListener("submit", submitBudgetForm);
