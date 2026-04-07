@@ -26,3 +26,20 @@ class FinancialProfile(BaseModel):
         if not value.strip():
             raise ValueError("Please share a financial goal so we can tailor the analysis.")
         return value
+
+
+class ScenarioAdjustments(BaseModel):
+    monthly_income_change: float = 0
+    savings_goal_change: float = 0
+    housing_change: float = 0
+    utilities_change: float = 0
+    food_change: float = 0
+    gas_change: float = 0
+    debt_payments_change: float = 0
+    personal_change: float = 0
+    other_change: float = 0
+
+
+class ScenarioRequest(BaseModel):
+    profile: FinancialProfile
+    adjustments: ScenarioAdjustments

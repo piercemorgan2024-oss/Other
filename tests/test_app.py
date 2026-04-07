@@ -150,3 +150,40 @@ def test_intake_rejects_negative_values() -> None:
     response = client.post("/intake", json=payload)
 
     assert response.status_code == 422
+
+
+def test_scenario_updates_budget_analysis_and_recommendations() -> None:
+    payload = {
+        "profile": {
+            "monthly_income": 2600,
+            "debt_balance": 18000,
+            "savings_goal": 150,
+            "financial_goal": "Reduce debt stress",
+            "expenses": {
+                "housing": 1100,
+                "utilities": 210,
+                "food": 390,
+                "gas": 230,
+                "debt_payments": 420,
+                "personal": 180,
+                "other": 140,
+            },
+        },
+        "adjustments": {
+            "monthly_income_change": 200,
+            "housing_change": -100,
+            "food_change": -40,
+            "gas_change": -20,
+        },
+    }
+
+    response = client.post("/scenario", json=payload)
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Here is how those changes could affect your monthly picture."
+    assert response.json()["summary"]["monthly_income"] == 2800.0
+    assert response.json()["summary"]["total_expenses"] == 2510.0
+    assert response.json()["summary"]["remaining_balance"] == 290.0
+    assert response.json()["budget_plan"]["budget_health"]["status"] == "stable"
+    assert response.json()["spending_analysis"]["pressure_level"] == "moderate"
+    assert response.json()["recommendations"]["recommendations"][0]["title"] == "Free up a small monthly cushion"

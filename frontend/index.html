@@ -208,6 +208,65 @@
               </p>
             </div>
           </div>
+
+          <div class="analysis-panel">
+            <div class="plan-header">
+              <div>
+                <p class="section-label">What-if tool</p>
+                <h3>Test a small change before making it in real life.</h3>
+              </div>
+            </div>
+
+            <p class="analysis-overview">
+              Try an increase or decrease to see how your monthly picture could shift.
+            </p>
+
+            <form id="scenario-form" class="budget-form" novalidate>
+              <div class="field-grid">
+                <label>
+                  Income change
+                  <input name="monthly_income_change" type="number" step="0.01" value="0" />
+                </label>
+                <label>
+                  Savings goal change
+                  <input name="savings_goal_change" type="number" step="0.01" value="0" />
+                </label>
+                <label>
+                  Housing change
+                  <input name="housing_change" type="number" step="0.01" value="0" />
+                </label>
+                <label>
+                  Utilities change
+                  <input name="utilities_change" type="number" step="0.01" value="0" />
+                </label>
+                <label>
+                  Food change
+                  <input name="food_change" type="number" step="0.01" value="0" />
+                </label>
+                <label>
+                  Gas change
+                  <input name="gas_change" type="number" step="0.01" value="0" />
+                </label>
+                <label>
+                  Debt payments change
+                  <input name="debt_payments_change" type="number" step="0.01" value="0" />
+                </label>
+                <label>
+                  Personal change
+                  <input name="personal_change" type="number" step="0.01" value="0" />
+                </label>
+                <label>
+                  Other change
+                  <input name="other_change" type="number" step="0.01" value="0" />
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit">Run scenario</button>
+                <p id="scenario-message" class="form-message" aria-live="polite"></p>
+              </div>
+            </form>
+          </div>
         </section>
       </section>
     </main>

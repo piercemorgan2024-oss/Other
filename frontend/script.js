@@ -1,5 +1,7 @@
 const budgetForm = document.querySelector("#budget-form");
+const scenarioForm = document.querySelector("#scenario-form");
 const formMessage = document.querySelector("#form-message");
+const scenarioMessage = document.querySelector("#scenario-message");
 const resultCard = document.querySelector("#result-card");
 const totalExpenses = document.querySelector("#total-expenses");
 const remainingBalance = document.querySelector("#remaining-balance");
@@ -19,6 +21,7 @@ const recommendationSummary = document.querySelector("#recommendation-summary");
 const recommendationList = document.querySelector("#recommendation-list");
 const nextStepText = document.querySelector("#next-step-text");
 const apiBaseUrl = "http://127.0.0.1:8000";
+let currentProfile = null;
 
 function formatCurrency(value) {
   return new Intl.NumberFormat("en-US", {
@@ -38,6 +41,22 @@ function parseRequiredNumber(formData, fieldName) {
 
   if (Number.isNaN(value) || value < 0) {
     throw new Error("Please use zero or a positive number for all money fields.");
+  }
+
+  return value;
+}
+
+function parseScenarioNumber(formData, fieldName) {
+  const rawValue = formData.get(fieldName);
+
+  if (rawValue === null || rawValue === "") {
+    return 0;
+  }
+
+  const value = Number(rawValue);
+
+  if (Number.isNaN(value)) {
+    throw new Error("Please use numeric values in the what-if tool.");
   }
 
   return value;
@@ -118,6 +137,40 @@ function renderRecommendationList(recommendations) {
   });
 }
 
+function renderResponse(data, messageElement) {
+  messageElement.textContent = data.message;
+  totalExpenses.textContent = formatCurrency(data.summary.total_expenses);
+  remainingBalance.textContent = formatCurrency(data.summary.remaining_balance);
+  spendingRatio.textContent = `${data.summary.spending_ratio}%`;
+  goalText.textContent = data.profile.financial_goal;
+  recommendedSavings.textContent = formatCurrency(data.budget_plan.recommended_budget.savings);
+  essentialTotal.textContent = formatCurrency(data.budget_plan.recommended_budget.essentials_total);
+  flexibleTotal.textContent = formatCurrency(data.budget_plan.recommended_budget.flexible_total);
+  focusMessage.textContent = data.budget_plan.budget_health.focus_message;
+  budgetHealth.textContent = `Status: ${data.budget_plan.budget_health.status}`;
+  renderAdjustments(data.budget_plan.adjustments);
+  pressureLevel.textContent = `Pressure level: ${data.spending_analysis.pressure_level}`;
+  analysisOverview.textContent = data.spending_analysis.overview;
+  renderSimpleList(
+    pressurePoints,
+    data.spending_analysis.pressure_points.map(
+      (point) => `${point.title}. ${point.detail}`,
+    ),
+    "No major pressure points are standing out yet."
+  );
+  renderSimpleList(
+    reliefAreas,
+    data.spending_analysis.relief_areas.map(
+      (area) => `${area.label}: around ${formatCurrency(area.relief_amount)} of potential monthly relief.`,
+    ),
+    "No overspending categories are above the current targets."
+  );
+  recommendationSummary.textContent = data.recommendations.summary;
+  renderRecommendationList(data.recommendations.recommendations);
+  nextStepText.textContent = data.recommendations.next_step;
+  resultCard.hidden = false;
+}
+
 async function submitBudgetForm(event) {
   event.preventDefault();
   formMessage.classList.remove("error");
@@ -142,42 +195,62 @@ async function submitBudgetForm(event) {
     }
 
     const data = await response.json();
-
-    formMessage.textContent = data.message;
-    totalExpenses.textContent = formatCurrency(data.summary.total_expenses);
-    remainingBalance.textContent = formatCurrency(data.summary.remaining_balance);
-    spendingRatio.textContent = `${data.summary.spending_ratio}%`;
-    goalText.textContent = data.profile.financial_goal;
-    recommendedSavings.textContent = formatCurrency(data.budget_plan.recommended_budget.savings);
-    essentialTotal.textContent = formatCurrency(data.budget_plan.recommended_budget.essentials_total);
-    flexibleTotal.textContent = formatCurrency(data.budget_plan.recommended_budget.flexible_total);
-    focusMessage.textContent = data.budget_plan.budget_health.focus_message;
-    budgetHealth.textContent = `Status: ${data.budget_plan.budget_health.status}`;
-    renderAdjustments(data.budget_plan.adjustments);
-    pressureLevel.textContent = `Pressure level: ${data.spending_analysis.pressure_level}`;
-    analysisOverview.textContent = data.spending_analysis.overview;
-    renderSimpleList(
-      pressurePoints,
-      data.spending_analysis.pressure_points.map(
-        (point) => `${point.title}. ${point.detail}`,
-      ),
-      "No major pressure points are standing out yet."
-    );
-    renderSimpleList(
-      reliefAreas,
-      data.spending_analysis.relief_areas.map(
-        (area) => `${area.label}: around ${formatCurrency(area.relief_amount)} of potential monthly relief.`,
-      ),
-      "No overspending categories are above the current targets."
-    );
-    recommendationSummary.textContent = data.recommendations.summary;
-    renderRecommendationList(data.recommendations.recommendations);
-    nextStepText.textContent = data.recommendations.next_step;
-    resultCard.hidden = false;
+    currentProfile = data.profile;
+    renderResponse(data, formMessage);
   } catch (error) {
     formMessage.textContent = error.message;
     formMessage.classList.add("error");
   }
 }
 
+async function submitScenarioForm(event) {
+  event.preventDefault();
+  scenarioMessage.classList.remove("error");
+
+  if (!currentProfile) {
+    scenarioMessage.textContent = "Save your starting point first so the what-if tool has a baseline.";
+    scenarioMessage.classList.add("error");
+    return;
+  }
+
+  try {
+    const formData = new FormData(scenarioForm);
+    const adjustments = {
+      monthly_income_change: parseScenarioNumber(formData, "monthly_income_change"),
+      savings_goal_change: parseScenarioNumber(formData, "savings_goal_change"),
+      housing_change: parseScenarioNumber(formData, "housing_change"),
+      utilities_change: parseScenarioNumber(formData, "utilities_change"),
+      food_change: parseScenarioNumber(formData, "food_change"),
+      gas_change: parseScenarioNumber(formData, "gas_change"),
+      debt_payments_change: parseScenarioNumber(formData, "debt_payments_change"),
+      personal_change: parseScenarioNumber(formData, "personal_change"),
+      other_change: parseScenarioNumber(formData, "other_change"),
+    };
+
+    scenarioMessage.textContent = "Running your scenario...";
+
+    const response = await fetch(`${apiBaseUrl}/scenario`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        profile: currentProfile,
+        adjustments,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("We could not run that scenario yet. Please try again.");
+    }
+
+    const data = await response.json();
+    renderResponse(data, scenarioMessage);
+  } catch (error) {
+    scenarioMessage.textContent = error.message;
+    scenarioMessage.classList.add("error");
+  }
+}
+
 budgetForm.addEventListener("submit", submitBudgetForm);
+scenarioForm.addEventListener("submit", submitScenarioForm);
