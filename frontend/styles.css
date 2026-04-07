@@ -27,7 +27,8 @@ body {
 .page {
   min-height: 100vh;
   display: grid;
-  place-items: center;
+  gap: 24px;
+  align-content: start;
   padding: 24px;
 }
 
@@ -84,9 +85,164 @@ h1 {
   font-size: 1.05rem;
 }
 
+.intake-panel {
+  width: min(980px, 100%);
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow);
+}
+
+.panel-copy h2,
+.result-card h3 {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+.panel-copy p:last-child {
+  max-width: 62ch;
+  line-height: 1.7;
+  color: var(--text-soft);
+}
+
+.section-label {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.78rem;
+  color: var(--accent);
+}
+
+.budget-form {
+  margin-top: 28px;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(23, 49, 44, 0.18);
+  border-radius: 14px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--text-main);
+}
+
+input:focus {
+  outline: 2px solid rgba(31, 122, 92, 0.24);
+  border-color: var(--accent);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.expense-section {
+  margin-top: 30px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.expense-copy {
+  margin: 0 0 18px;
+  color: var(--text-soft);
+}
+
+.form-actions {
+  margin-top: 24px;
+  display: grid;
+  gap: 14px;
+}
+
+button {
+  justify-self: start;
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 22px;
+  font: inherit;
+  font-weight: 700;
+  color: #f7f4ec;
+  background: linear-gradient(135deg, #1f7a5c, #2d8a69);
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.03);
+}
+
+.form-message {
+  min-height: 1.5em;
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.form-message.error {
+  color: #9f2d20;
+}
+
+.result-card {
+  margin-top: 28px;
+  padding: 24px;
+  border-radius: 22px;
+  background: #f8f5ef;
+  border: 1px solid var(--border);
+}
+
+.result-grid {
+  margin: 18px 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.result-grid div {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+dt {
+  font-size: 0.88rem;
+  color: var(--text-soft);
+}
+
+dd {
+  margin: 8px 0 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
 @media (max-width: 640px) {
   .hero {
     padding: 28px 22px;
     border-radius: 22px;
+  }
+
+  .intake-panel {
+    padding: 24px 20px;
+    border-radius: 22px;
+  }
+
+  .field-grid,
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  button {
+    width: 100%;
+    justify-self: stretch;
   }
 }

@@ -21,7 +21,117 @@
           <strong id="api-status">Checking connection...</strong>
         </div>
       </section>
+      <section class="intake-panel">
+        <div class="panel-copy">
+          <p class="section-label">Financial intake</p>
+          <h2>Start with your current monthly picture.</h2>
+          <p>
+            Share the basics in a simple format. This first step is only here
+            to help us understand where your money is going and what matters
+            most to you.
+          </p>
+        </div>
+
+        <form id="budget-form" class="budget-form" novalidate>
+          <div class="field-grid">
+            <label>
+              Monthly income
+              <input name="monthly_income" type="number" min="0" step="0.01" required />
+            </label>
+            <label>
+              Total debt balance
+              <input name="debt_balance" type="number" min="0" step="0.01" required />
+            </label>
+            <label>
+              Monthly savings goal
+              <input name="savings_goal" type="number" min="0" step="0.01" required />
+            </label>
+            <label class="full-width">
+              Main financial goal
+              <input
+                name="financial_goal"
+                type="text"
+                maxlength="160"
+                placeholder="Examples: build an emergency fund, catch up on bills, reduce debt stress"
+                required
+              />
+            </label>
+          </div>
+
+          <div class="expense-section">
+            <div>
+              <p class="section-label">Monthly expenses</p>
+              <p class="expense-copy">
+                Enter your best estimate. It is okay if the numbers are not perfect yet.
+              </p>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                Housing
+                <input name="housing" type="number" min="0" step="0.01" required />
+              </label>
+              <label>
+                Utilities
+                <input name="utilities" type="number" min="0" step="0.01" required />
+              </label>
+              <label>
+                Food
+                <input name="food" type="number" min="0" step="0.01" required />
+              </label>
+              <label>
+                Transportation
+                <input name="transportation" type="number" min="0" step="0.01" required />
+              </label>
+              <label>
+                Healthcare
+                <input name="healthcare" type="number" min="0" step="0.01" required />
+              </label>
+              <label>
+                Debt payments
+                <input name="debt_payments" type="number" min="0" step="0.01" required />
+              </label>
+              <label>
+                Personal
+                <input name="personal" type="number" min="0" step="0.01" required />
+              </label>
+              <label>
+                Other
+                <input name="other" type="number" min="0" step="0.01" required />
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit">Save my starting point</button>
+            <p id="form-message" class="form-message" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <section id="result-card" class="result-card" hidden>
+          <p class="section-label">Current snapshot</p>
+          <h3>Your numbers are ready for analysis.</h3>
+          <dl class="result-grid">
+            <div>
+              <dt>Total monthly expenses</dt>
+              <dd id="total-expenses">$0.00</dd>
+            </div>
+            <div>
+              <dt>Remaining balance</dt>
+              <dd id="remaining-balance">$0.00</dd>
+            </div>
+            <div>
+              <dt>Spending ratio</dt>
+              <dd id="spending-ratio">0%</dd>
+            </div>
+            <div>
+              <dt>Goal</dt>
+              <dd id="goal-text">Not set</dd>
+            </div>
+          </dl>
+        </section>
+      </section>
     </main>
     <script src="script.js"></script>
   </body>
-  </html>
+</html>
