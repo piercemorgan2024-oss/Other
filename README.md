@@ -49,3 +49,18 @@ Excluded:
 - `Project Specs.docx` contains the functional and architectural guide.
 
 This repository will be built incrementally with a focus on correctness, supportiveness, and maintainability.
+
+## Project Structure
+
+```text
+backend/   FastAPI backend and business logic
+frontend/  Static MVP interface
+tests/     Automated tests
+```
+
+## Getting Started
+
+1. Create and activate a virtual environment.
+2. Install dependencies with `pip install -r requirements.txt`.
+3. Start the backend with `uvicorn backend.app.main:app --reload`.
+4. Open `frontend/index.html` to view the initial UI shell.
