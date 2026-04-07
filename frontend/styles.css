@@ -267,6 +267,10 @@ dd {
   background: rgba(255, 255, 255, 0.8);
 }
 
+.recommendation-next-step {
+  margin-top: 18px;
+}
+
 .adjustment-list {
   margin: 12px 0 0;
   padding-left: 20px;

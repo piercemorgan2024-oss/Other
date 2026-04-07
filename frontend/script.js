@@ -15,6 +15,9 @@ const pressureLevel = document.querySelector("#pressure-level");
 const analysisOverview = document.querySelector("#analysis-overview");
 const pressurePoints = document.querySelector("#pressure-points");
 const reliefAreas = document.querySelector("#relief-areas");
+const recommendationSummary = document.querySelector("#recommendation-summary");
+const recommendationList = document.querySelector("#recommendation-list");
+const nextStepText = document.querySelector("#next-step-text");
 const apiBaseUrl = "http://127.0.0.1:8000";
 
 function formatCurrency(value) {
@@ -98,6 +101,23 @@ function renderSimpleList(listElement, items, emptyMessage) {
   });
 }
 
+function renderRecommendationList(recommendations) {
+  recommendationList.innerHTML = "";
+
+  if (!recommendations.length) {
+    const item = document.createElement("li");
+    item.textContent = "No recommendations are available yet.";
+    recommendationList.append(item);
+    return;
+  }
+
+  recommendations.forEach((recommendation) => {
+    const item = document.createElement("li");
+    item.textContent = `${recommendation.title}: ${recommendation.action} ${recommendation.reason}`;
+    recommendationList.append(item);
+  });
+}
+
 async function submitBudgetForm(event) {
   event.preventDefault();
   formMessage.classList.remove("error");
@@ -150,6 +170,9 @@ async function submitBudgetForm(event) {
       ),
       "No overspending categories are above the current targets."
     );
+    recommendationSummary.textContent = data.recommendations.summary;
+    renderRecommendationList(data.recommendations.recommendations);
+    nextStepText.textContent = data.recommendations.next_step;
     resultCard.hidden = false;
   } catch (error) {
     formMessage.textContent = error.message;

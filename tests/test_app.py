@@ -66,6 +66,11 @@ def test_intake_accepts_valid_financial_profile() -> None:
     assert response.json()["budget_plan"]["budget_health"]["status"] == "stable"
     assert response.json()["spending_analysis"]["pressure_level"] == "low"
     assert response.json()["spending_analysis"]["overspending_categories"] == []
+    assert response.json()["recommendations"]["recommendations"][0]["title"] == "Use your current stability intentionally"
+    assert any(
+        "savings" in recommendation["action"].lower()
+        for recommendation in response.json()["recommendations"]["recommendations"]
+    )
 
 
 def test_intake_handles_irregular_low_income_profile() -> None:
@@ -92,6 +97,7 @@ def test_intake_handles_irregular_low_income_profile() -> None:
     assert response.json()["budget_plan"]["budget_health"]["status"] == "tight"
     assert response.json()["spending_analysis"]["pressure_level"] == "moderate"
     assert response.json()["spending_analysis"]["pressure_points"][-1]["title"] == "Savings goal does not have full room yet"
+    assert response.json()["recommendations"]["recommendations"][0]["title"] == "Free up a small monthly cushion"
 
 
 def test_intake_handles_high_debt_profile_with_negative_balance() -> None:
@@ -120,6 +126,8 @@ def test_intake_handles_high_debt_profile_with_negative_balance() -> None:
     assert response.json()["spending_analysis"]["pressure_level"] == "high"
     assert response.json()["spending_analysis"]["overspending_categories"][0]["category"] == "housing"
     assert response.json()["spending_analysis"]["relief_areas"][0]["label"] == "Housing"
+    assert response.json()["recommendations"]["recommendations"][0]["title"] == "Create breathing room first"
+    assert "housing" in response.json()["recommendations"]["next_step"].lower()
 
 
 def test_intake_rejects_negative_values() -> None:

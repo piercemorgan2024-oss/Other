@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.app.analysis_engine import build_spending_analysis
 from backend.app.budget_engine import build_budget_plan
 from backend.app.models import FinancialProfile
+from backend.app.recommendation_engine import build_recommendations
 
 
 app = FastAPI(
@@ -37,6 +38,7 @@ def submit_intake(profile: FinancialProfile) -> dict[str, object]:
     remaining_balance = round(profile.monthly_income - total_expenses, 2)
     budget_plan = build_budget_plan(profile)
     spending_analysis = build_spending_analysis(profile)
+    recommendations = build_recommendations(profile, budget_plan, spending_analysis)
 
     if profile.monthly_income == 0:
         spending_ratio = 0.0
@@ -56,4 +58,5 @@ def submit_intake(profile: FinancialProfile) -> dict[str, object]:
         },
         "budget_plan": budget_plan,
         "spending_analysis": spending_analysis,
+        "recommendations": recommendations,
     }
