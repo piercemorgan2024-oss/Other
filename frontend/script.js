@@ -174,6 +174,8 @@ function renderResponse(data, messageElement) {
 async function submitBudgetForm(event) {
   event.preventDefault();
   formMessage.classList.remove("error");
+  scenarioMessage.classList.remove("error");
+  scenarioMessage.textContent = "";
   resultCard.hidden = true;
 
   try {
@@ -197,6 +199,7 @@ async function submitBudgetForm(event) {
     const data = await response.json();
     currentProfile = data.profile;
     renderResponse(data, formMessage);
+    resultCard.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     formMessage.textContent = error.message;
     formMessage.classList.add("error");
@@ -246,6 +249,7 @@ async function submitScenarioForm(event) {
 
     const data = await response.json();
     renderResponse(data, scenarioMessage);
+    resultCard.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     scenarioMessage.textContent = error.message;
     scenarioMessage.classList.add("error");

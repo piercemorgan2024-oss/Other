@@ -64,3 +64,7 @@ tests/     Automated tests
 2. Install dependencies with `pip install -r requirements.txt`.
 3. Start the backend with `uvicorn backend.app.main:app --reload`.
 4. Open `frontend/index.html` to view the initial UI shell.
+
+## User Guide
+
+See `USER_GUIDE.md` for a short walkthrough of how to use the app and interpret the results.
